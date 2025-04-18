@@ -98,6 +98,9 @@ docker build --build-arg CUDA_VERSION=12.8.1 -t 3dgrut:cuda128 .
 
 </br>
 
+### Running with Conda (CUDA Toolkit 11.8/12.8)
+If you have CUDA Toolkit 11.8 or 12.8, follow the original instructions
+
 To set up the environment using conda, first clone the repository and run `./install_env.sh` script as:
 
 ```bash
@@ -108,6 +111,30 @@ cd 3dgrut
 chmod +x install_env.sh
 ./install_env.sh 3dgrut
 conda activate 3dgrut
+```
+
+### Running with Conda (CUDA Toolkit 12.0-12.6)
+If you are not using CUDA Toolkit 11.8 or 12.8, you need to specify the install script to use 11.8 build tools.
+
+To set up the environment using conda, first clone the repository and run `./install_env.sh` script as:
+```
+# Clone to a new folder
+git clone --recursive https://github.com/nv-tlabs/3dgrut.git 3dgrut
+cd 3dgrut
+
+# Set the CUDA version that matches PyTorch
+export CUDA_VERSION=11.8.0
+
+# Create the environment manually first so CONDA_PREFIX exists
+conda create -n 3dgrut_test python=3.11 -y
+conda activate 3dgrut_test
+
+# Update PATH so conda’s CUDA 11.8 takes priority
+export PATH="$CONDA_PREFIX/bin:$PATH"
+
+# Now install everything using the script
+chmod +x install_env.sh
+./install_env.sh 3dgrut_test
 ```
 
 ### Running with Docker

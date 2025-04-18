@@ -1,3 +1,11 @@
+### Read first
+__This is a forked 3DGRUT Tutorial and the main codes will not be updated__
+This forked GitHub project is intented for folks who have little to know command-line knowledge and want to install, train, and view results from 3DGRUT. 
+
+The section below is from the original GitHub page. Jump down to [Go to Dependencies and Installation](#-1-dependencies-and-installation) to get started. <br>
+<br>
+<br>
+
 <p align="center">
   <img height="100" src="assets/3dgrut_logo.png">
 </p>

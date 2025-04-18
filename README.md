@@ -48,15 +48,16 @@ To mitigate this limitation, we also propose 3DGUT, which enables support for di
 - [Contents](#contents)
 - [🔧 1 Dependencies and Installation](#-1-dependencies-and-installation)
   - [Running with Docker](#running-with-docker)
-- [💻 2. Train 3DGRT or 3DGUT scenes](#-2-train-3dgrt-or-3dgut-scenes)
+- [2. Prepare your data](#-2-prepare-your-data)
+- [💻 3. Train 3DGRT or 3DGUT scenes](#-3-train-3dgrt-or-3dgut-scenes)
   - [Using image masks](#using-image-masks)
-- [🎥 3. Rendering from Checkpoints](#-3-rendering-from-checkpoints)
+- [🎥 4. Rendering from Checkpoints](#-4-rendering-from-checkpoints)
   - [To visualize training progress interactively](#to-visualize-training-progress-interactively)
   - [To visualize a pre-trained checkpoint](#to-visualize-a-pre-trained-checkpoint)
-- [📋 4. Evaluations](#-4-evaluations)
-- [🛝 5. Interactive Playground GUI](#-5-interactive-playground-gui)
-- [🎓 6. Citations](#-6-citations)
-- [🙏 7. Acknowledgements](#-7-acknowledgements)
+- [📋 5. Evaluations](#-5-evaluations)
+- [🛝 6. Interactive Playground GUI](#-6-interactive-playground-gui)
+- [🎓 7. Citations](#-7-citations)
+- [🙏 8. Acknowledgements](#-8-acknowledgements)
 
 ## 🔧 1 Dependencies and Installation
 - CUDA 11.8+ Compatible System
@@ -138,6 +139,7 @@ chmod +x install_env.sh
 ```
 
 ### Running with Docker
+Ensure you have [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html) intalled. 
 
 Build the docker image:
 ```bash
@@ -154,7 +156,12 @@ docker run -v --rm -it --gpus=all --net=host --ipc=host -v $PWD:/workspace --run
 > [!NOTE]
 > Remember to set DISPLAY environment variable if you are running on a remote server from command line.
 
-## 💻 2. Train 3DGRT or 3DGUT scenes
+## 2. Prepare your data
+
+_Section coming soon_
+<br>
+
+## 💻 3. Train 3DGRT or 3DGUT scenes
 
 We provide different configurations for training using 3DGRT and 3DGUT models on common benchmark datasets. 
 For example you can download [NeRF Synthetic dataset](https://www.kaggle.com/datasets/nguyenhung1903/nerf-synthetic-dataset), 
@@ -206,7 +213,7 @@ The provided masks should have the same resolution as their corresponding images
 
 **NOTE**: The masks are only used for loss computation and not for computing the metrics.
 
-## 🎥 3. Rendering from Checkpoints
+## 🎥 4. Rendering from Checkpoints
 Evaluate Checkpoint with Splatting / OptiX Tracer / Torch
 ```bash
 python render.py --checkpoint runs/lego/ckpt_last.pt --out-dir outputs/eval
@@ -229,7 +236,7 @@ On start up, you might see a black screen, but you can use the GUI to navigate t
 <img src="assets/train_gui_initial.jpg" height="400"/> 
 <img src="assets/render_lego.jpg" height="400"/>
 
-## 📋 4. Evaluations
+## 📋 5. Evaluations
 
 We provide scripts to reproduce results reported in publications.
 
@@ -392,7 +399,7 @@ bash ./benchmark/scannetpp_render.sh results/scannetpp
 
 </details>
 
-## 🛝 5. Interactive Playground GUI
+## 🛝 6. Interactive Playground GUI
 
 The playground allows interactive exploration of pretrained scenes, with raytracing effects such as inserted objects, 
 reflections, refractions, depth of field, and more.
@@ -408,7 +415,7 @@ See [Playground README](threedgrut_playground/README.md) for details.
 see README for details.*
 
 
-## 🎓 6. Citations
+## 🎓 7. Citations
 
 ```
 @article{loccoz20243dgrt,
@@ -428,7 +435,7 @@ see README for details.*
 }
 ```
 
-## 🙏 7. Acknowledgements
+## 🙏 8. Acknowledgements
 
 We sincerely thank our colleagues for their valuable contributions to this project.
 

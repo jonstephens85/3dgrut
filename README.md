@@ -48,7 +48,7 @@ To mitigate this limitation, we also propose 3DGUT, which enables support for di
 - [Contents](#contents)
 - [🔧 1 Dependencies and Installation](#-1-dependencies-and-installation)
   - [Running with Docker](#running-with-docker)
-- [2. Prepare your data](#-2-prepare-your-data)
+- [2. Prepare your data](#2-prepare-your-data)
 - [💻 3. Train 3DGRT or 3DGUT scenes](#-3-train-3dgrt-or-3dgut-scenes)
   - [Using image masks](#using-image-masks)
 - [🎥 4. Rendering from Checkpoints](#-4-rendering-from-checkpoints)

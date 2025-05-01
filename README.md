@@ -158,10 +158,181 @@ docker run -v --rm -it --gpus=all --net=host --ipc=host -v $PWD:/workspace --run
 
 ## 2. Prepare your data
 
-_Section coming soon_
+This section covers how to prepare your data for the colmap_3dgrt, colmap_3dgut, colmap_3dgrt_mcmc, and colmap_3dgut_mcmc config files. As more image types are supported, I will expand on this section.
+
+Required software:
+- COLMAP
+- Imagemagick (for image downsampling)
+<br>
+
+The data format is expected to be in the same format as the original 3DGS project:
+```
+<location>
+|---images
+|   |---<image 0>
+|   |---<image 1>
+|   |---...
+|---sparse
+    |---0
+        |---cameras.bin
+        |---images.bin
+        |---points3D.bin
+```
+
+However, I have not tested other COLMAP export formats but the Python code suggests camera and images txt files with a ply can be used as well.
+
+### Downsampling Images
+You may run out of memory if you have low VRAM and/or are using too many high resolution images. Downsampling will reduce the amount of VRAM needed and speed up training. I suggest keeping images around 2k-4k pixels on the longest dimension.
+
+Step 1: Install Imagemagick if not already installed:
+```
+sudo apt update
+sudo apt install imagemagick
+```
+
+Step 2: Make a downsample directory and downsample your images. This example is for half scale. For quarter, eighth scale, etc. call your folder images_4, images_8, etc. and change the resize value to 25%, 12.5%, etc.:
+```
+mkdir -p ./images_2
+mogrify -path ./images_2 -resize 50% ./images/*.jpg
+```
+
+Your resulting folder should look like this:
+```
+|---images
+|   |---<image 0>
+|   |---<image 1>
+|---images_2
+|   |---<image 0>
+|   |---<image 1>
+```
+
+### Running COLMAP
+COLMAP is a specialized software for running structure from motion. This software will determine where each photo was taken in 3D space as well as build a 3D point cloud for you.
+
+If you alread have it installed and are comfortable using it in terminal, follow these commands:
+```
+mkdir sparse
+
+# Use images_2 if you want downsampled images
+# Change to OPENCV_FISHEYE for fisheye lenses
+# Remove --ImageReader.single_camera if using more than one camera
+colmap feature_extractor \
+    --database_path database.db \
+    --image_path images \
+    --ImageReader.camera_model SIMPLE_PINHOLE \
+    --ImageReader.single_camera 1
+
+colmap exhaustive_matcher \
+    --database_path database.db
+
+# Use images_2 if you want downsampled images
+colmap mapper \
+    --database_path database.db \
+    --image_path images \
+    --output_path sparse
+```
+
+For Newbies, the GUI path is much easier to follow.
+
+Step 1: Install COLMAP - this will install COLMAP from Ubuntu's package manager. If you want the latest updates, consult COLMAP's install page on its website.
+```
+sudo apt update
+sudo apt install colmap
+```
+
+Step 2: Launch the GUI and set up a new project
+- Launch COLMAP using `colmap gui` in terminal. A GUI will launch. From there, select `File > New Project`
+- Select `New` for the Database and create a new database file called `database.db` in your project's root folder (not the images folder)
+- For images, select the `images` folder or `images_2` folder if it exist. Using the downsampled images will run faster and often yields better results!
+
+Step 3: Run Feature Extraction
+- Select `Processing > Feature Extraction`
+- For Camera model select `PINHOLE`, `SIMPLE_PINHOLE`, or `OPENCV_FISHEYE` depending on your camera. I suggest unless you are using a fisheye camera, you should choose `SIMPLE_PINHOLE`
+- Checkmark `Shared for all images` if you used one camera for the entire scene.
+- Click Extract - this should only take a minute or two to run.
+
+Step 4: Feature Matching
+- Select `Processing > Feature Matching`
+- For randomly captured images, use the `Exhaustive` tab, for images taken in sequence, use the `Sequential` tab.
+- Leave parameters at default and click `Run` for large datasets this could take a while...and yes, it runs primarily on CPU.
+
+Step 5: Reconstruction
+- Select `Reconstruction > Start Reconstruction` - this can take a while...and again, it runs on CPU.
+- You will see the scene incrementally build before your eyes. Grab popcorn and enjoy!
+
+Step 6: Export
+- Select `File > Export Model`
+- In the export folder dialog box, create a new folder in your project folder called `sparse`. Within the newly created sparse folder, create another folder called `0`. Save your files into the 0 folder. Refer to my file structure reference above.
+
+BOOM! You are ready to create your very own 3DGRUT scene!!!
+
 <br>
 
 ## 💻 3. Train 3DGRT or 3DGUT scenes
+There is a lot of confusing instructions in this section. I added a simplfied explainer at the top for you!
+
+### How to train with 3DGRT (Ray-Traced Results)
+Run this command for the base 3DGRT training:
+```
+python train.py --config-name apps/colmap_3dgrt.yaml \
+    path=data/my_scene \
+    out_dir=runs \
+    experiment_name=my_scene_3dgrt \
+    with_gui=True \
+    dataset.downsample_factor=2 \
+    export_ply.enabled=true
+```
+
+Run this command for the 3DGRT training with the MCMC densification strategy:
+```
+python train.py --config-name apps/apps/colmap_3dgrt_mcmc.yaml \
+    path=data/my_scene \
+    out_dir=runs \
+    experiment_name=my_scene_3dgrt \
+    with_gui=True \
+    dataset.downsample_factor=2 \
+    export_ply.enabled=true
+```
+**NOTES:** 
+- replace "my_scene" withe the actual path to your project.
+- Experiment name, you can call it whatever you want as long as you don't have space.
+- `with_gui=True` will launch the GUI during training. You cannot close the GUI once training starts!
+- Remove `dataset.downsample_factor=2` if you are not downsampling the data
+
+<br>
+
+### How to train with 3DGUT (Ray-Traced > Tranformed to GS Results - FASTER RENDERING!!!)
+Run this command for the base 3DGRT training:
+```
+python train.py --config-name apps/colmap_3dgut.yaml \
+    path=data/my_scene \
+    out_dir=runs \
+    experiment_name=my_scene_3dgrt \
+    with_gui=True \
+    dataset.downsample_factor=2 \
+    export_ply.enabled=true
+```
+
+Run this command for the 3DGRT training with the MCMC densification strategy:
+```
+python train.py --config-name apps/apps/colmap_3dgut_mcmc.yaml \
+    path=data/my_scene \
+    out_dir=runs \
+    experiment_name=my_scene_3dgrt \
+    with_gui=True \
+    dataset.downsample_factor=2 \
+    export_ply.enabled=true
+```
+
+**NOTES:** 
+- replace "my_scene" withe the actual path to your project.
+- Experiment name, you can call it whatever you want as long as you don't have space.
+- `with_gui=True` will launch the GUI during training. You cannot close the GUI once training starts!
+- Remove `dataset.downsample_factor=2` if you are not downsampling the data
+
+<br>
+
+### The original instructions from the project
 
 We provide different configurations for training using 3DGRT and 3DGUT models on common benchmark datasets. 
 For example you can download [NeRF Synthetic dataset](https://www.kaggle.com/datasets/nguyenhung1903/nerf-synthetic-dataset), 

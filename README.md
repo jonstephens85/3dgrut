@@ -64,8 +64,6 @@ To mitigate this limitation, we also propose 3DGUT, which enables support for di
 - For good performance with 3DGRT, we recommend using an NVIDIA GPU with Ray Tracing (RT) cores.
 - Currently, only Linux environments are supported by the included install script (Windows support coming soon!)
 
-**NOTE This seems to be a promising route to get it working on WSL2: [https://github.com/nv-tlabs/3dgrut/issues/40#issuecomment-2781067451](https://github.com/nv-tlabs/3dgrut/issues/40#issuecomment-2781067451)**
-
 <details> 
 <summary> NOTE: gcc versions >11 (expand for details)</summary>
 </br>
@@ -98,6 +96,8 @@ To build the docker image, you can use the following command:
 docker build --build-arg CUDA_VERSION=12.8.1 -t 3dgrut:cuda128 .
 ```
 </details>
+
+**NOTE: This seems to be a promising route to get it working on WSL2: [https://github.com/nv-tlabs/3dgrut/issues/40#issuecomment-2781067451](https://github.com/nv-tlabs/3dgrut/issues/40#issuecomment-2781067451)**
 
 </br>
 
